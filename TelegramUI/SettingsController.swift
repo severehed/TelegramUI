@@ -63,6 +63,7 @@ private enum SettingsSection: Int32 {
     case generalSettings
     case advanced
     case help
+    case llama
 }
 
 private enum SettingsEntry: ItemListNodeEntry {
@@ -94,6 +95,8 @@ private enum SettingsEntry: ItemListNodeEntry {
     case askAQuestion(PresentationTheme, UIImage?, String)
     case faq(PresentationTheme, UIImage?, String)
     
+    case llamaSettings(PresentationTheme, UIImage?, String)
+    
     var section: ItemListSectionId {
         switch self {
             case .userInfo, .setProfilePhoto, .setUsername:
@@ -112,6 +115,8 @@ private enum SettingsEntry: ItemListNodeEntry {
                 return SettingsSection.advanced.rawValue
             case .askAQuestion, .faq:
                 return SettingsSection.help.rawValue
+            case .llamaSettings:
+                return SettingsSection.llama.rawValue
         }
     }
     
@@ -159,6 +164,8 @@ private enum SettingsEntry: ItemListNodeEntry {
                 return 1014
             case .faq:
                 return 1015
+            case .llamaSettings:
+                return 5555
         }
     }
     
@@ -322,6 +329,12 @@ private enum SettingsEntry: ItemListNodeEntry {
                 } else {
                     return false
                 }
+            case let .llamaSettings(lhsTheme, lhsImage, lhsText):
+                if case let .llamaSettings(rhsTheme, rhsImage, rhsText) = rhs, lhsTheme === rhsTheme, lhsImage === rhsImage, lhsText == rhsText {
+                    return true
+                } else {
+                    return false
+                }
         }
     }
     
@@ -438,6 +451,10 @@ private enum SettingsEntry: ItemListNodeEntry {
                 return ItemListDisclosureItem(theme: theme, icon: image, title: text, label: "", sectionId: ItemListSectionId(self.section), style: .blocks, action: {
                     arguments.openFaq(nil)
                 })
+            case let .llamaSettings(theme, image, text):
+                return ItemListDisclosureItem(theme: theme, icon: image, title: text, label: "", sectionId: ItemListSectionId(self.section), style: .blocks, action: {
+
+                })
         }
     }
 }
@@ -515,6 +532,8 @@ private func settingsEntries(account: Account, presentationData: PresentationDat
         
         entries.append(.askAQuestion(presentationData.theme, PresentationResourcesSettings.support, presentationData.strings.Settings_Support))
         entries.append(.faq(presentationData.theme, PresentationResourcesSettings.faq, presentationData.strings.Settings_FAQ))
+        
+        entries.append(.llamaSettings(presentationData.theme, PresentationResourcesSettings.faq, "Llama config"))
     }
     
     return entries
